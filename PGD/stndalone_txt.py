@@ -60,7 +60,12 @@ if __name__ == "__main__":
 
     sequence_tensor = None
     try:
-        frame_files = sorted(os.listdir(path_to_frames))
+
+        all_files = os.listdir(path_to_frames)
+        frame_files = [f for f in all_files if f.endswith(('.jpg', '.jpeg', '.png'))]
+        # Sorting files based on the number in the filename
+        frame_files.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
+        
         transform = transforms.Compose([
             transforms.Resize((33, 100)),
             transforms.ToTensor(),
@@ -166,7 +171,7 @@ if __name__ == "__main__":
         # Save adversarial images
         save_dir = os.path.join(os.path.dirname(__file__), 'Results', 'adv_images')
         os.makedirs(save_dir, exist_ok=True)
-        
+
         # Remove batch dimension and denormalize
         adv_imgs = adversarial_input.squeeze(0)
         for idx in range(adv_imgs.shape[3]):

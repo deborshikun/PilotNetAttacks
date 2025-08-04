@@ -1,2 +1,36 @@
-PGD
-FGSM
+PGD --> Projected Gradient Descent
+
+model (nn.Module) – model to attack.
+eps (float) – maximum perturbation. (Default: 8/255)
+alpha (float) – step size. (Default: 2/255)
+steps (int) – number of steps. (Default: 10)
+random_start (bool) – using random initialization of delta. (Default: True)
+
+Examples::
+attack = torchattacks.PGD(model, eps=8/255, alpha=1/255, steps=10, random_start=True)
+adv_images = attack(images, labels)
+---------------------------------------------------------------------------------------------------------------------------
+
+FGSM --> Fast Gradient Sign Method
+
+model (nn.Module) – model to attack.
+eps (float) – maximum perturbation. (Default: 8/255)
+
+Examples::
+attack = torchattacks.FGSM(model, eps=8/255)
+adv_images = attack(images, labels)
+---------------------------------------------------------------------------------------------------------------------------
+
+MIFGSM --> Momentum Iterative Fast Gradient Sign Method
+
+model (nn.Module) – model to attack.
+eps (float) – maximum perturbation. (Default: 8/255)
+alpha (float) – step size. (Default: 2/255)
+decay (float) – momentum factor. (Default: 1.0)
+steps (int) – number of iterations. (Default: 10)
+
+Examples::
+attack = torchattacks.MIFGSM(model, eps=8/255, steps=10, decay=1.0)
+adv_images = attack(images, labels)
+---------------------------------------------------------------------------------------------------------------------------
+
