@@ -1,0 +1,7 @@
+torch
+torchvision
+lava-dl
+lava-nc
+numpy
+matplotlib
+Pillow
