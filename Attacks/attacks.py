@@ -17,6 +17,9 @@ class Attack:
         # This makes the class callable like a function: attack(images, target)
         return self.forward(*args, **kwargs)
 
+
+"""Adding all the attacks which I shall use now"""
+
 class FGSM(Attack):
     """
     FGSM attack specialized for the SNN regression model.
@@ -89,6 +92,54 @@ class PGD(Attack):
                                        retain_graph=False, create_graph=False)[0]
 
             # Perform the PGD step
+            adv_images = adv_images.detach() + self.alpha * grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=-1, max=1).detach()
+
+        return adv_images
+
+
+class MIFGSM(Attack):
+    """
+    Momentum Iterative FGSM (MIFGSM) attack specialized for a regression model.
+    This attack incorporates momentum into the iterative process for more effective attacks.
+    """
+    def __init__(self, model, eps=0.03, alpha=2/255, steps=10, decay=1.0):
+        super().__init__(model)
+        self.eps = eps
+        self.alpha = alpha
+        self.steps = steps
+        self.decay = decay
+        self.loss = nn.MSELoss()
+
+    def forward(self, images, target):
+        images = images.clone().detach().to(self.device)
+        target = target.clone().detach().to(self.device)
+
+        adv_images = images.clone().detach()
+        momentum = torch.zeros_like(images).detach().to(self.device)
+
+        for _ in range(self.steps):
+            adv_images.requires_grad = True
+            
+            # Get the tuple output directly from the SNN model
+            outputs, _, _ = self.model(adv_images)
+            final_prediction = outputs.mean()
+            
+            # Calculate loss
+            cost = self.loss(final_prediction, target.squeeze())
+            
+            # Get gradient of the loss
+            grad = torch.autograd.grad(cost, adv_images,
+                                       retain_graph=False, create_graph=False)[0]
+            
+            # Calculate momentum gradient
+            grad_norm = torch.norm(grad, p=1)
+            grad = grad / grad_norm
+            grad = grad + self.decay * momentum
+            momentum = grad
+            
+            # Perform the MIFGSM step
             adv_images = adv_images.detach() + self.alpha * grad.sign()
             delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=-1, max=1).detach()
