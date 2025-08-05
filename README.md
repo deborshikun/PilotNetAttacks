@@ -8,22 +8,22 @@ This repository contains implementations of several **gradient-based adversarial
 PilotNetAttacks/
 │
 ├── Attacks/
-│   └── attacks.py          # Core file with all attack class definitions.
+│   └── attacks.py          #attack class definitions.
 │
-├── FGSM/
-│   ├── modular_txt.py      # Main script to run FGSM and generate text report.
-│   └── modular_plot.py     # Main script to run FGSM and generate plot.
+├── FGSM/                   #FGSM text report and plot.
+│   ├── modular_txt.py      
+│   └── modular_plot.py     
 │
-├── PGD/
-│   ├── modular_txt.py      # Main script to run PGD and generate text report.
-│   └── modular_plot.py     # Main script to run PGD and generate plot.
+├── PGD/                    #PGD text report and plot.
+│   ├── modular_txt.py     
+│   └── modular_plot.py     
 │
-├── MIFGSM/
-│   ├── modular_txt.py      # Main script to run MIFGSM and generate text report.
-│   └── modular_plot.py     # Main script to run MIFGSM and generate plot.
+├── MIFGSM/                 #MIFGSM text report and plot.
+│   ├── modular_txt.py      
+│   └── modular_plot.py     
 │
 ├── Trained/
-│   └── network.pt          # Pre-trained SNN model goes here.
+│   └── network.pt          # Pre-trained SDNN model.
 │
 ├── testing_dataset/
 │   ├── 0.jpg               # Input images.
