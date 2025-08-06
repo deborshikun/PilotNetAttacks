@@ -22,8 +22,7 @@ class Attack:
 
 class FGSM(Attack):
     """
-    FGSM attack specialized for the SNN regression model.
-    This class knows that the model returns a tuple (outputs, cost, counts).
+    FGSM attack specialized for the SNN regression model..
     """
     def __init__(self, model, eps=0.03):
         super().__init__(model)
@@ -55,8 +54,7 @@ class FGSM(Attack):
 
 class PGD(Attack):
     """
-    PGD attack specialized for the SNN regression model.
-    This class knows that the model returns a tuple (outputs, cost, counts).
+    PGD attack specialized for the SNN regression model..
     """
     def __init__(self, model, eps=0.03, alpha=2/255, steps=10, random_start=True):
         super().__init__(model)
