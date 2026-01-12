@@ -33,28 +33,6 @@ PilotNetAttacks/
 └── results.txt             # Contains ground truth and original model predictions.
 ```
 
----
-
-## Installation
-
-### 1. Prerequisites
-- Python 3.8+
-- Git
-
-### 2. Clone the Repository
-```bash
-git clone <your-repository-url>
-cd PilotNetAttacks
-```
-
-### 3. Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
 ## Usage
 
 ### Setup:
