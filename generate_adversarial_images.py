@@ -73,9 +73,8 @@ def main():
     elif args.attack == 'MIFGSM':
         folder_name = f"adv_img_eps{args.eps}_alpha{args.alpha}_steps{args.steps}_decay{args.decay}"
     
-    print(f"\n{'='*60}")
     print(f"Generate Adversarial Images - {args.attack}")
-    print(f"{'='*60}\n")
+    print(f"{'-'*45}\n")
     
     # Paths
     base_dir = os.path.dirname(__file__)

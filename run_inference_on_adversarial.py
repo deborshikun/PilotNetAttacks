@@ -129,8 +129,7 @@ def main():
         size=net.inp.shape[:2],
         transform=transform,
         visualize=True,
-        #sample_offset=0
-        sample_offset=10550  # To match original indexing
+        sample_offset=0  # Start from first adversarial image 
     )
     print(f"  Dataset ready with {len(adv_dataset)} samples\n")
     
