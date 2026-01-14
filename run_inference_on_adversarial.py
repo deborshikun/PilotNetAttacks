@@ -1,12 +1,6 @@
 """
-Run Inference on Adversarial Images using Lava SDNN
-====================================================
-This script runs inference on adversarial images using the network.net model
-and generates results with comparison to original predictions.
+Run Inference on Adversarial Images using lava-dl PilotNet SDNN using the network.net model
 
-Usage:
-    python run_inference_on_adversarial.py --attack FGSM
-    python run_inference_on_adversarial.py --attack PGD
 """
 
 import os
