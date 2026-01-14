@@ -70,9 +70,8 @@ def main():
     
     args = parser.parse_args()
     
-    print(f"\n{'='*60}")
     print(f"Inference on Adversarial Images - {args.attack}")
-    print(f"{'='*60}\n")
+    print(f"{'-'*45}\n")
     
     # Paths
     base_dir = os.path.dirname(__file__)
