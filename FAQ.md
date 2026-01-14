@@ -259,3 +259,55 @@ Both files represent the **same trained model**, just in different formats for d
 
 **Key Insight:**
 You cannot use `network.net` for attacks because the Lava format is designed for efficient inference, not gradient computation. Similarly, while you *could* use `network.pt` for inference, `network.net` is more efficient and allows running on Loihi 2 hardware.
+
+---
+
+## Q8: Why do the attacks use `min=-1, max=1` when torchattacks uses `min=0, max=1`?
+
+**Short Answer:**
+It depends on the **image normalization range**. Your pipeline normalizes images to [-1, 1], so clamping must use `min=-1, max=1`. Torchattacks uses unnormalized images in [0, 1], so they clamp to [0, 1].
+
+**Detailed Explanation:**
+
+**Image Preprocessing in Your Pipeline:**
+```python
+transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+```
+This transforms images from [0, 1] to [-1, 1] using the formula:
+```
+normalized = (image - 0.5) / 0.5 = 2 * image - 1
+```
+So pixel values range from **-1 to 1**.
+
+**Torchattacks Assumption:**
+The torchattacks library expects **unnormalized images** in [0, 1] range:
+```python
+# From torchattacks PGD
+adv_images = torch.clamp(adv_images, min=0, max=1).detach()
+```
+
+**Your Attacks (Correct):**
+```python
+# From your PGD/MIFGSM/FGSM
+adv_images = torch.clamp(adv_images, min=-1, max=1).detach()
+```
+
+**Why This Matters:**
+
+If you used `min=0, max=1` with normalized images:
+- All negative values (which are valid after normalization) would be clamped to 0
+- This would corrupt the images and break the attacks
+- Gradients would be computed incorrectly
+
+**Verification:**
+Your normalized image range is [-1, 1], so:
+- Original images: values in [-1, 1] ✓
+- Perturbations: bounded by epsilon (e.g., 0.03) ✓
+- Adversarial images: must stay in [-1, 1] ✓
+- Clamp range: `min=-1, max=1` ✓
+
+**Summary:**
+- **Unnormalized images [0, 1]** → clamp to [0, 1] (torchattacks)
+- **Normalized images [-1, 1]** → clamp to [-1, 1] (your pipeline)
+
+Your implementation is correct for your preprocessing pipeline!

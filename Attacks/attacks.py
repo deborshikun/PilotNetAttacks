@@ -22,9 +22,9 @@ class Attack:
 
 class FGSM(Attack):
     """
-    FGSM attack specialized for the SNN regression model..
+    FGSM attack specialized for the SDNN regression model
     """
-    def __init__(self, model, eps=0.03):
+    def __init__(self, model, eps=8/255):
         super().__init__(model)
         self.eps = eps
         self.loss = nn.MSELoss()
@@ -35,7 +35,7 @@ class FGSM(Attack):
         
         images.requires_grad = True
             
-        # Get the tuple output directly from the SNN model
+        # Get the tuple output directly from the SDNN model
         outputs, _, _ = self.model(images)
         final_prediction = outputs.mean()
         
@@ -43,25 +43,19 @@ class FGSM(Attack):
         cost = self.loss(final_prediction, target.squeeze())
         
         # Get the gradient of the loss with respect to the input
-        grad = torch.autograd.grad(cost, images,
-                                   retain_graph=False, create_graph=False)[0]
-        
-        # Debug: Check gradient
-        print(f"    FGSM Debug - grad min: {grad.min().item():.6f}, max: {grad.max().item():.6f}, mean: {grad.mean().item():.6f}")
-        print(f"    FGSM Debug - grad.sign() unique values: {torch.unique(grad.sign())}")
-        print(f"    FGSM Debug - eps: {self.eps}")
+        grad = torch.autograd.grad(cost, images,retain_graph=False, create_graph=False)[0]
         
         # Create the adversarial image
         adv_images = images + self.eps * grad.sign()
-        adv_images = torch.clamp(adv_images, min=-1, max=1).detach()
+        adv_images = torch.clamp(adv_images, min=-1, max=1).detach() # [-1, 1] range for normalized images (torchattacks uses [0, 1], so we adjust accordingly)
         
         return adv_images
 
 class PGD(Attack):
     """
-    PGD attack specialized for the SNN regression model..
+    PGD attack specialized for the SDNN regression model
     """
-    def __init__(self, model, eps=0.03, alpha=2/255, steps=10, random_start=True):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, random_start=True):
         super().__init__(model)
         self.eps = eps
         self.alpha = alpha
@@ -107,7 +101,7 @@ class MIFGSM(Attack):
     Momentum Iterative FGSM (MIFGSM) attack specialized for a regression model.
     This attack incorporates momentum into the iterative process for more effective attacks.
     """
-    def __init__(self, model, eps=0.03, alpha=2/255, steps=10, decay=1.0):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
         super().__init__(model)
         self.eps = eps
         self.alpha = alpha
