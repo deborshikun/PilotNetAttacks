@@ -46,6 +46,11 @@ class FGSM(Attack):
         grad = torch.autograd.grad(cost, images,
                                    retain_graph=False, create_graph=False)[0]
         
+        # Debug: Check gradient
+        print(f"    FGSM Debug - grad min: {grad.min().item():.6f}, max: {grad.max().item():.6f}, mean: {grad.mean().item():.6f}")
+        print(f"    FGSM Debug - grad.sign() unique values: {torch.unique(grad.sign())}")
+        print(f"    FGSM Debug - eps: {self.eps}")
+        
         # Create the adversarial image
         adv_images = images + self.eps * grad.sign()
         adv_images = torch.clamp(adv_images, min=-1, max=1).detach()

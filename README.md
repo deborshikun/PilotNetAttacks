@@ -10,21 +10,6 @@ PilotNetAttacks/
 ├── Attacks/
 │   └── attacks.py          #attack class definitions.
 │
-├── FGSM/                   #FGSM text report and plot.
-│   ├── modular_txt.py      
-│   └── modular_plot.py     
-│
-├── PGD/                    #PGD text report and plot.
-│   ├── modular_txt.py     
-│   └── modular_plot.py     
-│
-├── MIFGSM/                 #MIFGSM text report and plot.
-│   ├── modular_txt.py      
-│   └── modular_plot.py     
-│
-├── Trained/
-│   └── network.pt          # Pre-trained SDNN model.
-│
 ├── testing_dataset/
 │   ├── 0.jpg               # Input images.
 │   ├── 1.jpg
@@ -33,31 +18,8 @@ PilotNetAttacks/
 └── results.txt             # Contains ground truth and original model predictions.
 ```
 
-## Usage
-
 ### Setup:
-- Place your pre-trained SNN model as `Trained/network.pt`
+- Place your pre-trained SDNN model as `pilotnet_sdnn/network.pt`
 - Place test images in `testing_dataset/`
-- Ensure `results.txt` is present in the root folder with format:
-  
-  ```
-  ImageName   GroundTruth   Output   Difference
-  ```
+- Place PyTorch model as `Trained/network.pt`
 
----
-
-### Running an Attack
-
-#### Example 1: PGD Attack with Text Report
-```bash
-cd PGD/
-python modular_txt.py
-```
-Output: `PGD/Results/adversarial_comparison.txt`
-
-#### Example 2: FGSM Attack with Plot
-```bash
-cd FGSM/
-python modular_plot.py
-```
-Output: `FGSM/Results/attack_comparison.png`
