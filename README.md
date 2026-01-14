@@ -10,12 +10,23 @@ PilotNetAttacks/
 ├── Attacks/
 │   └── attacks.py          #attack class definitions.
 │
-├── testing_dataset/
-│   ├── 0.jpg               # Input images.
-│   ├── 1.jpg
-│   └── ...
-│
-└── results.txt             # Contains ground truth and original model predictions.
+├── PGD/                    #attack files
+├── FGSM/
+├── MIFGSM/
+.
+.
+.
+├──pilotnet_sdnn/
+│   ├── network.net         #.net file
+│   ├── results.txt         #contains ground truth and original model predictions.
+│   . 
+│   .
+│   .
+└── testing_dataset/
+    ├── 0.jpg               #input images.
+    ├── 1.jpg
+    └── ...
+           
 ```
 
 ### Setup:
