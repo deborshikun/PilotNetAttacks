@@ -30,6 +30,8 @@ PilotNetAttacks/
 ```
 
 ### Setup:
+Used Python 3.9.10 to avoid version conflict
+
 - Place your pre-trained SDNN model as `pilotnet_sdnn/network.pt`
 - Place test images in `testing_dataset/`
 - Place PyTorch model as `Trained/network.pt`
