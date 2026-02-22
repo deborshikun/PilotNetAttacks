@@ -5,3 +5,5 @@ lava-nc
 numpy
 matplotlib
 Pillow
+torchattacks
+git+https://github.com/Harry24k/adversarial-attacks-pytorch.git

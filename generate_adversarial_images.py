@@ -66,12 +66,17 @@ def main():
     args = parser.parse_args()
     
     # Create folder name based on attack parameters
+    # Remove trailing zeros for consistency
+    eps_str = f"{args.eps}".rstrip('0').rstrip('.').replace('.', '')
+    alpha_str = f"{args.alpha}".rstrip('0').rstrip('.').replace('.', '')
+    decay_str = f"{args.decay}".rstrip('0').rstrip('.').replace('.', '')
+    
     if args.attack == 'FGSM':
-        folder_name = f"adv_img_eps{args.eps}"
+        folder_name = f"adv_img_eps{eps_str}"
     elif args.attack == 'PGD':
-        folder_name = f"adv_img_eps{args.eps}_alpha{args.alpha}_steps{args.steps}"
+        folder_name = f"adv_img_eps{eps_str}_alpha{alpha_str}_steps{args.steps}"
     elif args.attack == 'MIFGSM':
-        folder_name = f"adv_img_eps{args.eps}_alpha{args.alpha}_steps{args.steps}_decay{args.decay}"
+        folder_name = f"adv_img_eps{eps_str}_alpha{alpha_str}_steps{args.steps}_decay{decay_str}"
     
     print(f"Generate Adversarial Images - {args.attack}")
     print(f"{'-'*45}\n")
@@ -128,10 +133,12 @@ def main():
     
     # Generate adversarial images
     print(f"Generating adversarial images")
-    # Get target output (no grad needed here)
+    # Get target output (use eval mode for deterministic prediction)
+    model.eval()  # Disable dropout for consistent target
     with torch.no_grad():
         output, _, _ = model(sequence_tensor)
         target = output.mean()
+    model.train()  # Re-enable dropout for attack gradient computation
     
     print(f"  Target value: {target.item():.6f}")
     print(f"  Sequence tensor shape: {sequence_tensor.shape}")
@@ -163,20 +170,12 @@ def main():
     perturbation_mean = torch.mean(torch.abs(adv_sequence - sequence_tensor)).item()
     perturbation_max = torch.max(torch.abs(adv_sequence - sequence_tensor)).item()
     
-    # Create verification images (first 5 + 5 random samples)
-    print(f"Creating verification images")
+    # Create verification images for all frames in ascending order
+    print(f"Creating verification images for all frames")
     verification_dir = os.path.join(attack_dir, f'verification_{folder_name}')
     os.makedirs(verification_dir, exist_ok=True)
     
-    # Select indices: first 5 + 5 random
-    import random
-    indices = list(range(min(5, len(frame_files))))  # First 5
-    if len(frame_files) > 5:
-        remaining = list(range(5, len(frame_files)))
-        random_indices = random.sample(remaining, min(5, len(remaining)))
-        indices.extend(random_indices)
-    
-    for idx, i in enumerate(indices):
+    for idx, i in enumerate(range(len(frame_files))):
         fig, axes = plt.subplots(1, 3, figsize=(12, 4))
         
         # Original image
@@ -207,11 +206,11 @@ def main():
         axes[2].axis('off')
         
         plt.tight_layout()
-        plt.savefig(os.path.join(verification_dir, f'verify_{idx+1:02d}_{frame_files[i]}'), dpi=150)
+        plt.savefig(os.path.join(verification_dir, f'verification_{frame_files[i]}'), dpi=150)
         plt.close()
     
     print(f"Saved {len(frame_files)} adversarial images")
-    print(f"Created {len(indices)} verification images in {args.attack}/verification_{folder_name}/\n")
+    print(f"Created {len(frame_files)} verification images in {args.attack}/verification_{folder_name}/\n")
     # print(f"{'='*60}")
     # print(f"Perturbation Statistics:")
     # print(f"  Mean absolute perturbation: {perturbation_mean:.6f}")

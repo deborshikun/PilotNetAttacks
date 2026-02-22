@@ -6,7 +6,7 @@ class Attack:
     Base class for all attacks, establishing a consistent interface.
     """
     def __init__(self, model):
-        # The model passed here is the original SNN model.
+        # The model passed here is the original SDNN model.
         self.model = model
         self.device = next(model.parameters()).device
 
@@ -14,15 +14,12 @@ class Attack:
         raise NotImplementedError
 
     def __call__(self, *args, **kwargs):
-        # This makes the class callable like a function: attack(images, target)
+        # class call like function: attack(images, target)
         return self.forward(*args, **kwargs)
-
-
-"""Adding all the attacks which I shall use now"""
 
 class FGSM(Attack):
     """
-    FGSM attack specialized for the SDNN regression model
+    FGSM attack for the SDNN regression model
     """
     def __init__(self, model, eps=8/255):
         super().__init__(model)
@@ -53,7 +50,7 @@ class FGSM(Attack):
 
 class PGD(Attack):
     """
-    PGD attack specialized for the SDNN regression model
+    PGD attack for the SDNN regression model
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10, random_start=True):
         super().__init__(model)
@@ -77,7 +74,7 @@ class PGD(Attack):
         for _ in range(self.steps):
             adv_images.requires_grad = True
             
-            # Get the tuple output directly from the SNN model
+            # Get the tuple output directly from the SDNN model
             outputs, _, _ = self.model(adv_images)
             final_prediction = outputs.mean()
             
@@ -85,8 +82,7 @@ class PGD(Attack):
             cost = self.loss(final_prediction, target.squeeze())
             
             # Get gradient of the loss
-            grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
+            grad = torch.autograd.grad(cost, adv_images, retain_graph=False, create_graph=False)[0]
 
             # Perform the PGD step
             adv_images = adv_images.detach() + self.alpha * grad.sign()
@@ -98,7 +94,7 @@ class PGD(Attack):
 
 class MIFGSM(Attack):
     """
-    Momentum Iterative FGSM (MIFGSM) attack specialized for a regression model.
+    Momentum Iterative FGSM (MIFGSM) attack for a regression model.
     This attack incorporates momentum into the iterative process for more effective attacks.
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
@@ -119,7 +115,7 @@ class MIFGSM(Attack):
         for _ in range(self.steps):
             adv_images.requires_grad = True
             
-            # Get the tuple output directly from the SNN model
+            # Get the tuple output directly from the SDNN model
             outputs, _, _ = self.model(adv_images)
             final_prediction = outputs.mean()
             
@@ -127,8 +123,7 @@ class MIFGSM(Attack):
             cost = self.loss(final_prediction, target.squeeze())
             
             # Get gradient of the loss
-            grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
+            grad = torch.autograd.grad(cost, adv_images, retain_graph=False, create_graph=False)[0]
             
             # Calculate momentum gradient
             grad_norm = torch.norm(grad, p=1)
